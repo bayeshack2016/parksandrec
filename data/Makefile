@@ -1,0 +1,2 @@
+data:
+	sh extract.sh
