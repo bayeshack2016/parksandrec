@@ -27,13 +27,31 @@ def zips_binary(df):
     zips_binary = pd.get_dummies(zips[['FacZip']])
     return zips_binary.values
 
-def get_numeric_data(df):
-    park_num = df.groupby("Park")[["NumPeople", "leadtime", "duration", "traveldist"]].agg('median').reset_index()
-    park_num.leadtime = (park_num.leadtime - park_num.leadtime.mean())/park_num.leadtime.std(ddof=0)
-    park_num.duration = (park_num.duration - park_num.duration.mean())/park_num.duration.std(ddof=0)
-    park_num.NumPeople = (park_num.NumPeople - park_num.NumPeople.mean())/park_num.NumPeople.std(ddof=0)
-    park_num.traveldist = (park_num.traveldist - park_num.traveldist.mean())/park_num.traveldist.std(ddof=0)
-    return park_num
+def get_numeric_data(df, by='Park', cols=['NumPeople', 'leadtime',
+                                          'duration', 'traveldist']):
+    """Standardize `cols` in the `by`-level representation of the data
+    This representation is based on the median on the values in `cols`
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        reservation-level
+    by : str or list
+        if a single column, use either string or list
+        is multiple columns, use a list
+    cols : list
+        the columns to standardize
+
+    Returns
+    -------
+    numeric : pd.DataFrame
+        the standardized representation
+    """
+    park_num = df.groupby(by)[cols].agg('median').reset_index()
+    names = park_num[by].values
+    values = scale(park_num[cols])
+    numeric = pd.DataFrame(np.column_stack((names, values)), columns=park_num.columns)
+    return numeric
 
 def get_distance_matrix(df):
     vs = df[["NumPeople", "leadtime", "duration", "traveldist"]].values
