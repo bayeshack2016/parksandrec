@@ -2,11 +2,14 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
 
-def get_numeric_data():
-    df = pd.read_csv("data/PPL_reservationdata.csv", encoding="ISO-8859-1")
+def PPL_data():
+    df = pd.read_csv('data/raw/PPL_reservationdata.csv', encoding='ISO-8859-1')
     df = df.dropna()
     df.columns = [x.strip() for x in df.columns]
     df['traveldist'] = df['traveldist'].astype(float)
+    return df
+
+def get_numeric_data(df):
     park_num = df.groupby("Park")[["NumPeople", "leadtime", "duration", "traveldist"]].agg('median').reset_index()
     park_num.leadtime = (park_num.leadtime - park_num.leadtime.mean())/park_num.leadtime.std(ddof=0)
     park_num.duration = (park_num.duration - park_num.duration.mean())/park_num.duration.std(ddof=0)
