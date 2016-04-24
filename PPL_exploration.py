@@ -27,7 +27,7 @@ def binarize(df, by='Park', col='FacZip', no_duplicates=True, as_df=False):
     no_duplicates : bool
         remove duplicates
     as_df : bool
-        represent at pd.DataFrame
+        represent as pd.DataFrame with `by` column
 
     Returns
     -------
@@ -39,6 +39,7 @@ def binarize(df, by='Park', col='FacZip', no_duplicates=True, as_df=False):
         cols = cols.drop_duplicates()
     cols_binary = pd.get_dummies(cols[[col]])
     if as_df:
+        cols_binary[by] = df[by]
         return cols_binary
     else:
         return cols_binary.values
