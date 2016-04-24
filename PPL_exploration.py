@@ -13,7 +13,7 @@ def PPL_data():
     df['StartMonth'] = df['StartDate'].str.split('-').str[1]
     return df
 
-def binarize(df, by='Park', col='FacZip'):
+def binarize(df, by='Park', col='FacZip', no_duplicates=True, as_df=False):
     """Create a binary representation at the `by`-level for `cols`
 
     Parameters
@@ -24,16 +24,24 @@ def binarize(df, by='Park', col='FacZip'):
         representation-level
     col : str
         feature to binarize
+    no_duplicates : bool
+        remove duplicates
+    as_df : bool
+        represent at pd.DataFrame
 
     Returns
     -------
-    cols_binary : np.ndarray
+    cols_binary : np.ndarray or pd.DataFrame
     """
     df = df.copy()
     cols = df[[by, col]]
-    cols = cols.drop_duplicates()
+    if no_duplicates:
+        cols = cols.drop_duplicates()
     cols_binary = pd.get_dummies(cols[[col]])
-    return cols_binary.values
+    if as_df:
+        return cols_binary
+    else:
+        return cols_binary.values
 
 def get_numeric_data(df, by='Park', cols=['NumPeople', 'leadtime',
                                           'duration', 'traveldist'],
