@@ -1,5 +1,7 @@
+import numpy as np
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.preprocessing import scale
 
 
 def PPL_data():
@@ -15,7 +17,7 @@ def zips_binary(df):
     Parameters
     ----------
     df : pd.DataFrame
-        each row representing a reservation
+        reservation-level
 
     Returns
     -------
@@ -44,19 +46,14 @@ def get_numeric_data(df, by='Park', cols=['NumPeople', 'leadtime',
 
     Returns
     -------
-    numeric : pd.DataFrame
-        the standardized representation
+    by_cols : pd.DataFrame
+        non-standardized representation
+    values : np.ndarray
+        standardized representation
     """
-    park_num = df.groupby(by)[cols].agg('median').reset_index()
-    names = park_num[by].values
-    values = scale(park_num[cols])
-    numeric = pd.DataFrame(np.column_stack((names, values)), columns=park_num.columns)
-    return numeric
-
-def get_distance_matrix(df):
-    vs = df[["NumPeople", "leadtime", "duration", "traveldist"]].values
-    cos_scores = cosine_similarity(vs, vs)
-    return cos_scores
+    by_cols = df.groupby(by)[cols].agg('median').reset_index()
+    values = scale(by_cols[cols])
+    return by_cols, values
 
 def get_cleaned_matrix(cos_scores):
     for i in range(len(cos_scores)):
