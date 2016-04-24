@@ -1,5 +1,9 @@
+import re
+
+import nltk
 import numpy as np
 import pandas as pd
+from bs4 import BeautifulSoup
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import scale
@@ -92,10 +96,24 @@ def similarity_matrix(M, threshold=0.7):
     cos_scores[cos_scores<threshold] = 0.0
     return cos_scores
 
-def facility_description():
-    return NotImplemented
-
 def knn_recommender(scores, k=5):
     knn = NearestNeighbors(n_neighbors=k).fit(scores)
     _, indices = knn.kneighbors(scores)
     return indices
+
+def remove_tags(text, tags=['h2', 'br', 'h4']):
+    soup = BeautifulSoup(text, "html.parser")
+    [s.extract() for s in soup(tags)]
+    return re.sub('\.', '. ', soup.text)
+
+def split_on_sentence(text, first_sentence=True):
+    text = remove_tags(text)
+    sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
+    if first_sentence:
+        return sent_tokenizer.tokenize(text)[0]
+    else:
+        return sent_tokenizer.tokenize(text)
+
+def facility_description(df, facility_name):
+    text = df[df.FACILITYNAME == facility_name].FACILITYDESCRIPTION.values[0]
+    return split_on_sentence(text)
