@@ -19,3 +19,11 @@ def get_distance_matrix(df):
     vs = df[["NumPeople", "leadtime", "duration", "traveldist"]].values
     cos_scores = cosine_similarity(vs, vs)
     return cos_scores
+
+
+def get_cleaned_matrix(cos_scores):
+    for i in range(len(cos_scores)):
+        for j in range(len(cos_scores)):
+            if cos_scores[i][j] < 0.7:
+                cos_scores[i][j] = 0
+    return cos_scores
