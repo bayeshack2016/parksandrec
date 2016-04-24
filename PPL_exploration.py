@@ -55,9 +55,18 @@ def get_numeric_data(df, by='Park', cols=['NumPeople', 'leadtime',
     values = scale(by_cols[cols])
     return by_cols, values
 
-def get_cleaned_matrix(cos_scores):
-    for i in range(len(cos_scores)):
-        for j in range(len(cos_scores)):
-            if cos_scores[i][j] < 0.7:
-                cos_scores[i][j] = 0
-    return cos_scores
+def get_cleaned_matrix(cos_scores, threshold=0.7):
+    """Set values below `threshold` to 0.0
+
+    Parameters
+    ----------
+    cos_scores : np.ndarray
+        cosine similarity matrix
+    threshold : float
+        the value under which to set cell values to 0.0
+
+    Returns
+    -------
+    cos_scores : np.ndarray
+    """
+    return cos_scores[cos_scores < threshold] = 0.0
