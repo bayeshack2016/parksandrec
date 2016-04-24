@@ -12,23 +12,27 @@ def PPL_data():
     df['traveldist'] = df['traveldist'].astype(float)
     return df
 
-def zips_binary(df):
-    """Create a binary representation of the each facility zip code
+def binarize(df, by='Park', col='FacZip'):
+    """Create a binary representation at the `by`-level for `cols`
 
     Parameters
     ----------
     df : pd.DataFrame
         reservation-level
+    by : str
+        representation-level
+    col : str
+        feature to binarize
 
     Returns
     -------
-    zips_binary : np.ndarray
+    cols_binary : np.ndarray
     """
     df = df.copy()
-    zips = df[['Park', 'FacZip']]
-    zips = zips.drop_duplicates()
-    zips_binary = pd.get_dummies(zips[['FacZip']])
-    return zips_binary.values
+    cols = df[[by, col]]
+    cols = cols.drop_duplicates()
+    cols_binary = pd.get_dummies(cols[[col]])
+    return cols_binary.values
 
 def get_numeric_data(df, by='Park', cols=['NumPeople', 'leadtime',
                                           'duration', 'traveldist']):
@@ -78,7 +82,7 @@ def similarity_matrix(M, threshold=0.7):
 def facility_description():
     return NotImplemented
 
-def knn_recommender(k=5, scores):
+def knn_recommender(scores, k=5):
     knn = NearestNeighbors(n_neighbors=k).fit(scores)
     _, indices = knn.kneighbors(scores)
     return indices
