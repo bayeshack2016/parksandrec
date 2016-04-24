@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import scale
 
 
@@ -73,3 +74,11 @@ def similarity_matrix(M, threshold=0.7):
     cos_scores = cosine_similarity(M, M)
     cos_scores[cos_scores<threshold] = 0.0
     return cos_scores
+
+def facility_description():
+    return NotImplemented
+
+def knn_recommender(k=5, scores):
+    knn = NearestNeighbors(n_neighbors=k).fit(scores)
+    _, indices = knn.kneighbors(scores)
+    return indices
