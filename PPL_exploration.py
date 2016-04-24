@@ -36,9 +36,10 @@ def binarize(df, by='Park', col='FacZip'):
     return cols_binary.values
 
 def get_numeric_data(df, by='Park', cols=['NumPeople', 'leadtime',
-                                          'duration', 'traveldist']):
+                                          'duration', 'traveldist'],
+                     operation='median'):
     """Standardize `cols` in the `by`-level representation of the data
-    This representation is based on the median on the values in `cols`
+    This representation is based on the `operation` on the values in `cols`
 
     Parameters
     ----------
@@ -49,6 +50,8 @@ def get_numeric_data(df, by='Park', cols=['NumPeople', 'leadtime',
         is multiple columns, use a list
     cols : list
         the columns to standardize
+    operation : str
+        default median
 
     Returns
     -------
@@ -57,7 +60,7 @@ def get_numeric_data(df, by='Park', cols=['NumPeople', 'leadtime',
     values : np.ndarray
         standardized representation
     """
-    by_cols = df.groupby(by)[cols].agg('median').reset_index()
+    by_cols = df.groupby(by)[cols].agg(operation).reset_index()
     values = scale(by_cols[cols])
     return by_cols, values
 
