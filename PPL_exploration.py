@@ -9,6 +9,24 @@ def PPL_data():
     df['traveldist'] = df['traveldist'].astype(float)
     return df
 
+def zips_binary(df):
+    """Create a binary representation of the each facility zip code
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        each row representing a reservation
+
+    Returns
+    -------
+    zips_binary : np.ndarray
+    """
+    df = df.copy()
+    zips = df[['Park', 'FacZip']]
+    zips = zips.drop_duplicates()
+    zips_binary = pd.get_dummies(zips[['FacZip']])
+    return zips_binary.values
+
 def get_numeric_data(df):
     park_num = df.groupby("Park")[["NumPeople", "leadtime", "duration", "traveldist"]].agg('median').reset_index()
     park_num.leadtime = (park_num.leadtime - park_num.leadtime.mean())/park_num.leadtime.std(ddof=0)
@@ -17,12 +35,10 @@ def get_numeric_data(df):
     park_num.traveldist = (park_num.traveldist - park_num.traveldist.mean())/park_num.traveldist.std(ddof=0)
     return park_num
 
-
 def get_distance_matrix(df):
     vs = df[["NumPeople", "leadtime", "duration", "traveldist"]].values
     cos_scores = cosine_similarity(vs, vs)
     return cos_scores
-
 
 def get_cleaned_matrix(cos_scores):
     for i in range(len(cos_scores)):
