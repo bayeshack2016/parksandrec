@@ -10,6 +10,7 @@ def PPL_data():
     df = df.dropna()
     df.columns = [x.strip() for x in df.columns]
     df['traveldist'] = df['traveldist'].astype(float)
+    df['StartMonth'] = df['StartDate'].str.split('-').str[1]
     return df
 
 def binarize(df, by='Park', col='FacZip'):
